@@ -24,6 +24,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -50,8 +51,6 @@ import com.ichi2.anki.web.HttpFetcher;
 import com.ichi2.async.Connection;
 import com.ichi2.libanki.Utils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -218,8 +217,6 @@ public class TranslationActivity extends FragmentActivity implements DialogInter
 
 
     private String computeAddress() {
-        String address = "http://glosbe.com/gapi/translate?from=FROMLANG&dest=TOLANG&format=json&phrase=SOURCE&pretty=true";
-
         String strFrom = mSpinnerFrom.getSelectedItem().toString();
         // Conversion to iso, lister created before.
         String langCodeFrom = mLanguageLister.getCodeFor(strFrom);
@@ -227,18 +224,12 @@ public class TranslationActivity extends FragmentActivity implements DialogInter
         String strTo = mSpinnerTo.getSelectedItem().toString();
         mLangCodeTo = mLanguageLister.getCodeFor(strTo);
 
-        String query;
-
-        try {
-            query = URLEncoder.encode(mSource, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            query = mSource.replace(" ", "%20");
-        }
-
-        address = address.replaceAll("FROMLANG", langCodeFrom).replaceAll("TOLANG", mLangCodeTo)
-                .replaceAll("SOURCE", query);
-
-        return address;
+        return "http://glosbe.com/gapi/translate"
+                + "?from=" + Uri.encode(langCodeFrom)
+                + "&dest=" + Uri.encode(mLangCodeTo)
+                + "&format=json"
+                + "&phrase=" + Uri.encode(mSource)
+                + "&pretty=true";
     }
 
 
